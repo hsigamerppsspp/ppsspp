@@ -13,11 +13,6 @@ public:
 	virtual ~Executor() {}
 };
 
-class SameThreadExecutor : public Executor {
-public:
-	void Run(std::function<void()> func) override;
-};
-
 class NewThreadExecutor : public Executor {
 public:
 	~NewThreadExecutor() override;

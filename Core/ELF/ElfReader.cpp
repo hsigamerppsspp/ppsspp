@@ -15,6 +15,8 @@
 // Official git repository and contact information can be found at
 // https://github.com/hrydgard/ppsspp and http://www.ppsspp.org/.
 
+#include "Common/Thread/ParallelLoop.h"
+
 #include "Core/MemMap.h"
 #include "Core/Reporting.h"
 #include "Core/ThreadPools.h"
@@ -58,7 +60,7 @@ bool ElfReader::LoadRelocations(const Elf32_Rel *rels, int numRelocs)
 {
 	int numErrors = 0;
 	DEBUG_LOG(LOADER, "Loading %i relocations...", numRelocs);
-	GlobalThreadPool::Loop([&](int l, int h) {
+	ParallelRangeLoop(&g_threadManager, [&](int l, int h) {
 		for (int r = l; r < h; r++) {
 			VERBOSE_LOG(LOADER, "Loading reloc %i  (%p)...", r, rels + r);
 			u32 info = rels[r].r_info;

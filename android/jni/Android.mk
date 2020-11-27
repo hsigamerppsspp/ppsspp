@@ -281,8 +281,9 @@ EXEC_AND_LIB_FILES := \
   $(SRC)/Common/System/Display.cpp \
   $(SRC)/Common/Thread/Executor.cpp \
   $(SRC)/Common/Thread/PrioritizedWorkQueue.cpp \
-  $(SRC)/Common/Thread/ThreadPool.cpp \
   $(SRC)/Common/Thread/ThreadUtil.cpp \
+  $(SRC)/Common/Thread/ThreadManager.cpp \
+  $(SRC)/Common/Thread/ParallelLoop.cpp \
   $(SRC)/Common/UI/Root.cpp \
   $(SRC)/Common/UI/Screen.cpp \
   $(SRC)/Common/UI/UI.cpp \

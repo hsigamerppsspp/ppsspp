@@ -96,6 +96,7 @@
 #include "Core/Util/GameManager.h"
 #include "Core/Util/AudioFormat.h"
 #include "Core/WebServer.h"
+#include "Core/ThreadPools.h"
 
 #include "GPU/GPUInterface.h"
 #include "UI/BackgroundAudio.h"
@@ -344,6 +345,8 @@ static void PostLoadConfig() {
 		i18nrepo.LoadIni(g_Config.sLanguageIni);
 	else
 		i18nrepo.LoadIni(g_Config.sLanguageIni, langOverridePath);
+
+	g_threadManager.Init(g_Config.iNumWorkerThreads);
 }
 
 void CreateDirectoriesAndroid() {
