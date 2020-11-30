@@ -181,9 +181,6 @@
     <ClCompile Include="..\..\Common\Thread\Executor.cpp">
       <Filter>Thread</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Thread\PrioritizedWorkQueue.cpp">
-      <Filter>Thread</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Common\Thread\ThreadManager.cpp">
       <Filter>Thread</Filter>
     </ClCompile>
@@ -457,9 +454,6 @@
       <Filter>Input</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Common\Thread\Executor.h">
-      <Filter>Thread</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Common\Thread\PrioritizedWorkQueue.h">
       <Filter>Thread</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Common\Thread\Channel.h">

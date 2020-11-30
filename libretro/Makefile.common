@@ -206,7 +206,6 @@ SOURCES_CXX += \
 	$(COMMONDIR)/Serialize/Serializer.cpp \
 	$(COMMONDIR)/Thread/Executor.cpp \
 	$(COMMONDIR)/Thread/ThreadUtil.cpp \
-	$(COMMONDIR)/Thread/PrioritizedWorkQueue.cpp \
 	$(COMMONDIR)/Thread/ParallelLoop.cpp \
 	$(COMMONDIR)/Thread/ThreadManager.cpp \
 	$(COMMONDIR)/UI/Root.cpp \
