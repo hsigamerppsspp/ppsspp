@@ -598,8 +598,6 @@ add_library(Common STATIC
 	Common/System/Display.cpp
 	Common/System/Display.h
 	Common/Thread/Channel.h
-	Common/Thread/Executor.cpp
-	Common/Thread/Executor.h
 	Common/Thread/ParallelLoop.cpp
 	Common/Thread/ParallelLoop.h
 	Common/Thread/Promise.h

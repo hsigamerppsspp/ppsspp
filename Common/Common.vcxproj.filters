@@ -96,9 +96,6 @@
     <ClInclude Include="Thread\ThreadUtil.h">
       <Filter>Thread</Filter>
     </ClInclude>
-    <ClInclude Include="Thread\Executor.h">
-      <Filter>Thread</Filter>
-    </ClInclude>
     <ClInclude Include="Input\GestureDetector.h">
       <Filter>Input</Filter>
     </ClInclude>
@@ -495,9 +492,6 @@
       <Filter>ext\libpng17</Filter>
     </ClCompile>
     <ClCompile Include="Thread\ThreadUtil.cpp">
-      <Filter>Thread</Filter>
-    </ClCompile>
-    <ClCompile Include="Thread\Executor.cpp">
       <Filter>Thread</Filter>
     </ClCompile>
     <ClCompile Include="Input\GestureDetector.cpp">
