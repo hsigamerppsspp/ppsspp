@@ -2,6 +2,10 @@
 
 #include <mutex>
 
+// I plan to experiment with these to see if this approach can also work in C++.
+// The major advantage compared to a normal mutex is that we use the type system
+// to enforce that the resource is only accessed when the mutex is locked.
+
 template<class T>
 class RustMutexProxy {
 public:
@@ -31,5 +35,5 @@ private:
 
 // Note that name must be a global string that lives until the end of the process,
 // for assertThreadName to work.
-void setCurrentThreadName(const char *threadName);
+void SetCurrentThreadName(const char *threadName);
 void AssertCurrentThreadName(const char *threadName);

@@ -46,7 +46,7 @@ ThreadManager::~ThreadManager() {
 static void WorkerThreadFunc(GlobalThreadContext *global, ThreadContext *thread) {
 	char threadName[16];
 	snprintf(threadName, sizeof(threadName), "PoolWorker %d", thread->index);
-	setCurrentThreadName(threadName);
+	SetCurrentThreadName(threadName);
 	while (!thread->cancelled) {
 		Task *task = nullptr;
 
