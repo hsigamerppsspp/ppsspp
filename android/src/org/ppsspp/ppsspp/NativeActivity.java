@@ -102,7 +102,7 @@ public abstract class NativeActivity extends Activity {
 	private boolean shuttingDown;
 
 	private static final int RESULT_LOAD_IMAGE = 1;
-	private static final int RESULT_BROWSE_FILE = 2;
+	private static final int RESULT_OPEN_DOCUMENT = 2;
 	private static final int RESULT_OPEN_DOCUMENT_TREE = 3;
 
 	// Allow for multiple connected gamepads but just consider them the same for now.
@@ -1141,7 +1141,7 @@ public abstract class NativeActivity extends Activity {
 				cursor.close();
 				NativeApp.sendMessage("bgImage_updated", picturePath);
 			}
-		} else if (requestCode == RESULT_BROWSE_FILE) {
+		} else if (requestCode == RESULT_OPEN_DOCUMENT) {
 			Uri selectedFile = data.getData();
 			if (selectedFile != null) {
 				// Grab permanent permission so we can show it in recents list etc.
@@ -1152,10 +1152,22 @@ public abstract class NativeActivity extends Activity {
 				NativeApp.sendMessage("browse_fileSelect", selectedFile.toString());
 			}
 		} else if (requestCode == RESULT_OPEN_DOCUMENT_TREE) {
-			Uri selectedFile = data.getData();
-			if (selectedFile != null) {
-				// Convert URI to normal path. (This might not be possible in Android 12+)
-				String path = selectedFile.toString();
+			Uri selectedDirectoryUri = data.getData();
+			if (selectedDirectoryUri != null) {
+				Uri uncan = getContentResolver().uncanonicalize(selectedDirectoryUri);
+				Log.i(TAG, "Uncanonicalized: " + uncan.toString());
+				Log.i(TAG, "is tree:" + DocumentsContract.isTreeUri(selectedDirectoryUri));
+				/*
+				DocumentFile documentFile = DocumentFile.fromTreeUri(this, selectedDirectoryUri);
+				Log.i(TAG, "Document name: " + documentFile.getName());
+				DocumentFile[] children = documentFile.listFiles();
+				for (DocumentFile child : children) {
+					Log.i(TAG, "Child: " + child.getUri() + " " + child.getName());
+				}
+				if (documentFile.isDirectory()) {
+
+				 */
+				String path = selectedDirectoryUri.toString();
 				Log.i(TAG, "Browse folder finished: " + path);
 				NativeApp.sendMessage("browse_folderSelect", path);
 			}
@@ -1297,7 +1309,7 @@ public abstract class NativeActivity extends Activity {
 				intent.setType("*/*");
 				intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
 				//intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri);
-				startActivityForResult(intent, RESULT_BROWSE_FILE);
+				startActivityForResult(intent, RESULT_OPEN_DOCUMENT);
 			} catch (Exception e) {
 				Log.e(TAG, e.toString());
 				return false;
