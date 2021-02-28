@@ -120,6 +120,9 @@
 #if PPSSPP_PLATFORM(UWP)
 #include <dwrite_3.h>
 #endif
+#if PPSSPP_PLATFORM(ANDROID)
+#include "android/jni/app-android.h"
+#endif
 
 // The new UI framework, for initialization
 
@@ -486,18 +489,23 @@ void NativeInit(int argc, const char *argv[], const char *savegame_dir, const ch
 		host = new NativeHost();
 	}
 #endif
+	if (System_GetPropertyBool(SYSPROP_ANDROID_SCOPED_STORAGE)) {
+		g_Config.externalDirectory = g_extFilesDir;
+	} else {
+		g_Config.externalDirectory = external_dir;
+	}
 
 	g_Config.internalDataDirectory = savegame_dir;
-	g_Config.externalDirectory = external_dir;
 
 #if defined(__ANDROID__)
+
 	// TODO: This needs to change in Android 12.
 	//
 	// Maybe there should be an option to use internal memory instead, but I think
 	// that for most people, using external memory (SDCard/USB Storage) makes the
 	// most sense.
-	g_Config.memStickDirectory = std::string(external_dir) + "/";
-	g_Config.flash0Directory = std::string(external_dir) + "/flash0/";
+	g_Config.memStickDirectory = g_Config.externalDirectory + "/";
+	g_Config.flash0Directory = g_Config.externalDirectory + "/flash0/";
 
 	std::string memstickDirFile = g_Config.internalDataDirectory + "/memstick_dir.txt";
 	if (File::Exists(memstickDirFile)) {
