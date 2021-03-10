@@ -20,3 +20,9 @@ public:
 };
 
 extern std::string g_extFilesDir;
+
+// Called from PathBrowser for example.
+
+bool Android_IsContentUri(const std::string &filename);
+int Android_OpenContentUriFd(const std::string &filename);
+

@@ -1157,6 +1157,8 @@ public abstract class NativeActivity extends Activity {
 				Uri uncan = getContentResolver().uncanonicalize(selectedDirectoryUri);
 				Log.i(TAG, "Uncanonicalized: " + uncan.toString());
 				Log.i(TAG, "is tree:" + DocumentsContract.isTreeUri(selectedDirectoryUri));
+				getContentResolver().takePersistableUriPermission(selectedDirectoryUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
 				/*
 				DocumentFile documentFile = DocumentFile.fromTreeUri(this, selectedDirectoryUri);
 				Log.i(TAG, "Document name: " + documentFile.getName());

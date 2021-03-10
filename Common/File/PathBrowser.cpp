@@ -15,6 +15,11 @@
 
 #include "Core/System.h"
 
+#if PPSSPP_PLATFORM(ANDROID)
+#include "android/jni/app-android.h"
+#endif
+
+
 bool LoadRemoteFileList(const std::string &url, bool *cancel, std::vector<FileInfo> &files) {
 	http::Client http;
 	Buffer result;
@@ -238,11 +243,11 @@ bool PathBrowser::GetListing(std::vector<FileInfo> &fileInfo, const char *filter
 	while (!IsListingReady() && (!cancel || !*cancel)) {
 		// In case cancel changes, just sleep.
 		guard.unlock();
-		sleep_ms(100);
+		sleep_ms(50);
 		guard.lock();
 	}
 
-#ifdef _WIN32
+#if PPSSPP_PLATFORM(WINDOWS)
 	if (path_ == "/") {
 		// Special path that means root of file system.
 		std::vector<std::string> drives = getWindowsDrives();
@@ -258,6 +263,19 @@ bool PathBrowser::GetListing(std::vector<FileInfo> &fileInfo, const char *filter
 			fake.isWritable = false;
 			fileInfo.push_back(fake);
 		}
+	}
+#endif
+
+#if PPSSPP_PLATFORM(ANDROID)
+	if (Android_IsContentUri(path_)) {
+		int fd = Android_OpenContentUriFd(path_);
+		if (fd >= 0) {
+			ERROR_LOG(FILESYS, "Opened directory '%s' as fd %d", path_.c_str(), fd);
+			getFilesInDirByFd(fd, &fileInfo, filter);
+		} else {
+			ERROR_LOG(FILESYS, "Failed to open directory '%s' as fd", path_.c_str());
+		}
+		return true;
 	}
 #endif
 

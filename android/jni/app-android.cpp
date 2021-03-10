@@ -240,8 +240,13 @@ int Android_OpenContentUriFd(const std::string &filename) {
 	if (!nativeActivity) {
 		return -1;
 	}
+
+	std::string fname = filename;
+	// PPSSPP adds an ending slash to directories before looking them up.
+	if (fname.back() == '/')
+		fname.pop_back();
 	auto env = getEnv();
-	jstring param = env->NewStringUTF(filename.c_str());
+	jstring param = env->NewStringUTF(fname.c_str());
 	int fd = env->CallIntMethod(nativeActivity, openContentUri, param);
 	return fd;
 }

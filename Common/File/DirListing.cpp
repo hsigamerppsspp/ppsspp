@@ -104,6 +104,72 @@ bool FileInfo::operator <(const FileInfo & other) const {
 		return false;
 }
 
+size_t getFilesInDirByFd(int directoryFd, std::vector<FileInfo> * files, const char *filter, int flags) {
+	size_t foundEntries = 0;
+	std::set<std::string> filters;
+	if (filter) {
+		std::string tmp;
+		while (*filter) {
+			if (*filter == ':') {
+				filters.insert(std::move(tmp));
+			} else {
+				tmp.push_back(*filter);
+			}
+			filter++;
+		}
+		if (!tmp.empty())
+			filters.insert(std::move(tmp));
+	}
+	struct dirent *result = NULL;
+
+	//std::string directoryWithSlash = directory;
+	//if (directoryWithSlash.back() != '/')
+	//	directoryWithSlash += "/";
+
+	DIR *dirp = fdopendir(directoryFd);
+	if (!dirp)
+		return 0;
+	// non windows loop
+	while ((result = readdir(dirp)))
+	{
+		const std::string virtualName(result->d_name);
+		// check for "." and ".."
+		if (virtualName == "." || virtualName == "..")
+			continue;
+
+		// Remove dotfiles (optional with flag.)
+		if (!(flags & GETFILES_GETHIDDEN))
+		{
+			if (virtualName[0] == '.')
+				continue;
+		}
+
+		FileInfo info;
+		info.name = virtualName;
+
+		info.fullName = virtualName;
+		info.isDirectory = false;
+		info.exists = true;
+		info.size = 0;
+		info.isWritable = false;  // TODO - implement some kind of check
+		if (!info.isDirectory) {
+			std::string ext = getFileExtension(info.fullName);
+			if (filter) {
+				if (filters.find(ext) == filters.end())
+					continue;
+			}
+		}
+
+		if (files)
+			files->push_back(std::move(info));
+		foundEntries++;
+	}
+	closedir(dirp);
+	if (files)
+		std::sort(files->begin(), files->end());
+	return foundEntries;
+}
+
 size_t getFilesInDir(const char *directory, std::vector<FileInfo> * files, const char *filter, int flags) {
 	size_t foundEntries = 0;
 	std::set<std::string> filters;

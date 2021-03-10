@@ -128,4 +128,24 @@ public class PpssppActivity extends NativeActivity {
 			return -1;
 		}
 	}
+
+	public int openContentUriDir(String uriString) {
+		try {
+			val tree = DocumentFile.fromTreeUri(applicationContext, uri) ?: return@withContext
+					contentResolver.openFileDescriptor(tree.uri, "r")?.let {
+				val useFd = it.detachFd()
+				openDirNative
+			Uri uri = Uri.parse(uriString);
+
+			ParcelFileDescriptor filePfd = getContentResolver().openFileDescriptor(uri, "r");
+			if (filePfd == null) {
+				Log.e(TAG, "Failed to get file descriptor for " + uriString);
+				return -1;
+			}
+			return filePfd.detachFd();  // Take ownership of the fd.
+		} catch (Exception e) {
+			Log.e(TAG, "Exception opening content uri: " + e.toString());
+			return -1;
+		}
+	}
 }

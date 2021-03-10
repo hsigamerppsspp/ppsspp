@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include <stdio.h>
+#include <cstdio>
 
 #include <inttypes.h>
 
@@ -28,6 +28,9 @@ enum {
 	GETFILES_GETHIDDEN = 1
 };
 size_t getFilesInDir(const char *directory, std::vector<FileInfo> *files, const char *filter = nullptr, int flags = 0);
+#ifndef _WIN32
+size_t getFilesInDirByFd(int fd, std::vector<FileInfo> *files, const char *filter = nullptr, int flags = 0);
+#endif
 int64_t getDirectoryRecursiveSize(const std::string &path, const char *filter = nullptr, int flags = 0);
 
 #ifdef _WIN32
