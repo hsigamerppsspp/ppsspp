@@ -171,6 +171,7 @@ static float g_safeInsetBottom = 0.0;
 static jmethodID postCommand;
 
 static jmethodID openContentUri;
+static jmethodID openContentUriDir;
 static jmethodID closeContentUri;
 
 static jobject nativeActivity;
@@ -248,6 +249,21 @@ int Android_OpenContentUriFd(const std::string &filename) {
 	auto env = getEnv();
 	jstring param = env->NewStringUTF(fname.c_str());
 	int fd = env->CallIntMethod(nativeActivity, openContentUri, param);
+	return fd;
+}
+
+int Android_OpenContentUriDirFd(const std::string &filename) {
+	if (!nativeActivity) {
+		return -1;
+	}
+
+	std::string fname = filename;
+	// PPSSPP adds an ending slash to directories before looking them up.
+	if (fname.back() == '/')
+		fname.pop_back();
+	auto env = getEnv();
+	jstring param = env->NewStringUTF(fname.c_str());
+	int fd = env->CallIntMethod(nativeActivity, openContentUriDir, param);
 	return fd;
 }
 
@@ -523,6 +539,7 @@ extern "C" void Java_org_ppsspp_ppsspp_NativeActivity_registerCallbacks(JNIEnv *
 	nativeActivity = env->NewGlobalRef(obj);
 	postCommand = env->GetMethodID(env->GetObjectClass(obj), "postCommand", "(Ljava/lang/String;Ljava/lang/String;)V");
 	openContentUri = env->GetMethodID(env->GetObjectClass(obj), "openContentUri", "(Ljava/lang/String;)I");
+	openContentUriDir = env->GetMethodID(env->GetObjectClass(obj), "openContentUriDir", "(Ljava/lang/String;)I");
 }
 
 extern "C" void Java_org_ppsspp_ppsspp_NativeActivity_unregisterCallbacks(JNIEnv *env, jobject obj) {

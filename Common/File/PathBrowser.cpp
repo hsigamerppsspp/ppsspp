@@ -270,10 +270,17 @@ bool PathBrowser::GetListing(std::vector<FileInfo> &fileInfo, const char *filter
 	if (Android_IsContentUri(path_)) {
 		int fd = Android_OpenContentUriFd(path_);
 		if (fd >= 0) {
-			ERROR_LOG(FILESYS, "Opened directory '%s' as fd %d", path_.c_str(), fd);
-			getFilesInDirByFd(fd, &fileInfo, filter);
+			std::string path = path_;
+			if (path.back() == '/') {
+				path.pop_back();
+			}
+			ERROR_LOG(FILESYS, "PathBrowser: Opened directory '%s' as fd %d", path.c_str(), fd);
+			getFilesInDirByFd(fd, path, &fileInfo, filter, GETFILES_URIENCODE);
+			for (auto &info : fileInfo) {
+				ERROR_LOG(FILESYS, "%s - %s", info.fullName.c_str(), info.name.c_str());
+			}
 		} else {
-			ERROR_LOG(FILESYS, "Failed to open directory '%s' as fd", path_.c_str());
+			ERROR_LOG(FILESYS, "PathBrowser: Failed to open directory '%s' as fd", path_.c_str());
 		}
 		return true;
 	}
@@ -297,6 +304,15 @@ bool PathBrowser::CanNavigateUp() {
 	}
 #endif
 */
+#if PPSSPP_PLATFORM(ANDROID)
+	if (Android_IsContentUri(path_)) {
+		// Need to figure out how much we can navigate by parsing the URL.
+		// DocumentUri from seems to be split into two paths: The folder you have gotten permission to see,
+		// and the folder below it.
+		return false;
+	}
+#endif
+
 	if (path_ == "/" || path_ == "") {
 		return false;
 	}

@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
+import androidx.documentfile.provider.DocumentFile;
 
 public class PpssppActivity extends NativeActivity {
 	private static final String TAG = "PpssppActivity";
@@ -131,13 +132,9 @@ public class PpssppActivity extends NativeActivity {
 
 	public int openContentUriDir(String uriString) {
 		try {
-			val tree = DocumentFile.fromTreeUri(applicationContext, uri) ?: return@withContext
-					contentResolver.openFileDescriptor(tree.uri, "r")?.let {
-				val useFd = it.detachFd()
-				openDirNative
 			Uri uri = Uri.parse(uriString);
-
-			ParcelFileDescriptor filePfd = getContentResolver().openFileDescriptor(uri, "r");
+			DocumentFile tree = DocumentFile.fromTreeUri(this, uri);
+			ParcelFileDescriptor filePfd = getContentResolver().openFileDescriptor(tree.getUri(), "r");
 			if (filePfd == null) {
 				Log.e(TAG, "Failed to get file descriptor for " + uriString);
 				return -1;

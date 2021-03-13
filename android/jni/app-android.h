@@ -25,4 +25,5 @@ extern std::string g_extFilesDir;
 
 bool Android_IsContentUri(const std::string &filename);
 int Android_OpenContentUriFd(const std::string &filename);
+int Android_OpenDirectoryUriFd(const std::string &filename);
 

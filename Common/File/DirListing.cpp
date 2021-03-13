@@ -20,6 +20,7 @@
 
 #include "Common/Data/Encoding/Utf8.h"
 #include "Common/StringUtils.h"
+#include "Common/Net/URL.h"
 #include "Common/File/DirListing.h"
 
 #if !defined(__linux__) && !defined(_WIN32) && !defined(__QNX__)
@@ -104,7 +105,7 @@ bool FileInfo::operator <(const FileInfo & other) const {
 		return false;
 }
 
-size_t getFilesInDirByFd(int directoryFd, std::vector<FileInfo> * files, const char *filter, int flags) {
+size_t getFilesInDirByFd(int directoryFd, const std::string &rootDir, std::vector<FileInfo> * files, const char *filter, int flags) {
 	size_t foundEntries = 0;
 	std::set<std::string> filters;
 	if (filter) {
@@ -130,8 +131,7 @@ size_t getFilesInDirByFd(int directoryFd, std::vector<FileInfo> * files, const c
 	if (!dirp)
 		return 0;
 	// non windows loop
-	while ((result = readdir(dirp)))
-	{
+	while ((result = readdir(dirp))) {
 		const std::string virtualName(result->d_name);
 		// check for "." and ".."
 		if (virtualName == "." || virtualName == "..")
@@ -146,14 +146,17 @@ size_t getFilesInDirByFd(int directoryFd, std::vector<FileInfo> * files, const c
 
 		FileInfo info;
 		info.name = virtualName;
-
-		info.fullName = virtualName;
-		info.isDirectory = false;
+		if (flags & GETFILES_URIENCODE) {
+			info.fullName = rootDir + "%2F" + UriEncode(virtualName);
+		} else {
+			info.fullName = rootDir + "/" + virtualName;
+		}
+		info.isDirectory = result->d_type == DT_DIR;  // note - d_type is not posix, but linux (and thus Android) supports it
 		info.exists = true;
 		info.size = 0;
 		info.isWritable = false;  // TODO - implement some kind of check
 		if (!info.isDirectory) {
-			std::string ext = getFileExtension(info.fullName);
+			std::string ext = getFileExtension(info.name);
 			if (filter) {
 				if (filters.find(ext) == filters.end())
 					continue;

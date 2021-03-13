@@ -27,6 +27,7 @@ import android.os.PowerManager;
 import android.os.Vibrator;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import androidx.documentfile.provider.DocumentFile;
 import android.text.InputType;
 import android.util.Log;
 import android.view.Gravity;
@@ -1154,24 +1155,18 @@ public abstract class NativeActivity extends Activity {
 		} else if (requestCode == RESULT_OPEN_DOCUMENT_TREE) {
 			Uri selectedDirectoryUri = data.getData();
 			if (selectedDirectoryUri != null) {
-				Uri uncan = getContentResolver().uncanonicalize(selectedDirectoryUri);
-				Log.i(TAG, "Uncanonicalized: " + uncan.toString());
+				String path = selectedDirectoryUri.toString();
+				Log.i(TAG, "Browse folder finished: " + path);
 				Log.i(TAG, "is tree:" + DocumentsContract.isTreeUri(selectedDirectoryUri));
 				getContentResolver().takePersistableUriPermission(selectedDirectoryUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-				/*
 				DocumentFile documentFile = DocumentFile.fromTreeUri(this, selectedDirectoryUri);
-				Log.i(TAG, "Document name: " + documentFile.getName());
+				Log.i(TAG, "Document name: " + documentFile.getUri());
 				DocumentFile[] children = documentFile.listFiles();
 				for (DocumentFile child : children) {
 					Log.i(TAG, "Child: " + child.getUri() + " " + child.getName());
 				}
-				if (documentFile.isDirectory()) {
-
-				 */
-				String path = selectedDirectoryUri.toString();
-				Log.i(TAG, "Browse folder finished: " + path);
-				NativeApp.sendMessage("browse_folderSelect", path);
+				NativeApp.sendMessage("browse_folderSelect", documentFile.getUri().toString());
 			}
 		}
 	}
