@@ -115,8 +115,8 @@ static bool IsTempPath(const std::string &str) {
 
 class GameButton : public UI::Clickable {
 public:
-	GameButton(const std::string &gameFilename, const std::string &gamePath, bool gridStyle, UI::LayoutParams *layoutParams = 0)
-		: UI::Clickable(layoutParams), gridStyle_(gridStyle), gameFilename_(gameFilename), gamePath_(gamePath) {}
+	GameButton(const std::string &gamePath, bool gridStyle, UI::LayoutParams *layoutParams = 0)
+		: UI::Clickable(layoutParams), gridStyle_(gridStyle), gamePath_(gamePath) {}
 
 	void Draw(UIContext &dc) override;
 	std::string DescribeText() const override;
@@ -210,7 +210,6 @@ private:
 
 	bool gridStyle_;
 	std::string gamePath_;
-	std::string gameFilename_;
 	std::string title_;
 
 	double holdStart_ = 0.0;

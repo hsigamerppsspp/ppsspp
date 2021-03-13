@@ -146,8 +146,15 @@ size_t getFilesInDirByFd(int directoryFd, const std::string &rootDir, std::vecto
 
 		FileInfo info;
 		info.name = virtualName;
-		if (flags & GETFILES_URIENCODE) {
-			info.fullName = rootDir + "%2F" + UriEncode(virtualName);
+		if (flags & GETFILES_URIENCODE_ANDROID) {
+			// Split virtualName up into filename and extension.
+			// Avoid encoding the dot (and maybe extension!) Seems Android does this.
+			size_t dotPos = virtualName.find('.');
+			if (dotPos != std::string::npos) {
+				info.fullName = rootDir + "%2F" + UriEncode(virtualName.substr(0, dotPos)) + virtualName.substr(dotPos);
+			} else {
+				info.fullName = rootDir + "%2F" + UriEncode(virtualName);
+			}
 		} else {
 			info.fullName = rootDir + "/" + virtualName;
 		}

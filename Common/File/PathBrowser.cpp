@@ -275,7 +275,7 @@ bool PathBrowser::GetListing(std::vector<FileInfo> &fileInfo, const char *filter
 				path.pop_back();
 			}
 			ERROR_LOG(FILESYS, "PathBrowser: Opened directory '%s' as fd %d", path.c_str(), fd);
-			getFilesInDirByFd(fd, path, &fileInfo, filter, GETFILES_URIENCODE);
+			getFilesInDirByFd(fd, path, &fileInfo, filter, GETFILES_URIENCODE_ANDROID);
 			for (auto &info : fileInfo) {
 				ERROR_LOG(FILESYS, "%s - %s", info.fullName.c_str(), info.name.c_str());
 			}

@@ -26,7 +26,7 @@ FILE *openCFile(const std::string &filename, const char *mode);
 
 enum {
 	GETFILES_GETHIDDEN = 1,
-	GETFILES_URIENCODE = 2,  // Android shenanigans
+	GETFILES_URIENCODE_ANDROID = 2,  // Android shenanigans
 };
 size_t getFilesInDir(const char *directory, std::vector<FileInfo> *files, const char *filter = nullptr, int flags = 0);
 
