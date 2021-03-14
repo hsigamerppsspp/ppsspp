@@ -270,6 +270,10 @@ bool PathBrowser::GetListing(std::vector<FileInfo> &fileInfo, const char *filter
 	if (Android_IsContentUri(path_)) {
 		std::vector<std::string> files = Android_ListContentUri(path_);
 		fileInfo.clear();
+
+		std::vector<std::string> allowedExtensions;
+		SplitString(filter, ':', allowedExtensions);
+
 		for (auto &file : files) {
 			ERROR_LOG(FILESYS, "!! %s", file.c_str());
 			std::vector<std::string> parts;
@@ -278,10 +282,24 @@ bool PathBrowser::GetListing(std::vector<FileInfo> &fileInfo, const char *filter
 				continue;
 			}
 			FileInfo info;
+			info.name = parts[2];
+
+			if (allowedExtensions.size()) {
+				bool found = false;
+				for (auto &ext : allowedExtensions) {
+					if (endsWithNoCase(info.name, "." + ext)) {
+						found = true;
+						break;
+					}
+				}
+				if (!found) {
+					continue;
+				}
+			}
+
 			info.exists = true;
 			info.isDirectory = parts[0][0] == 'D';
 			sscanf(parts[1].c_str(), "%ld", &info.size);
-			info.name = parts[2];
 			info.fullName = parts[3];
 			info.isWritable = false;  // We don't yet request write access
 			fileInfo.push_back(info);
