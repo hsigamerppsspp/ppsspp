@@ -131,22 +131,6 @@ public class PpssppActivity extends NativeActivity {
 		}
 	}
 
-	public int openContentUriDir(String uriString) {
-		try {
-			Uri uri = Uri.parse(uriString);
-			DocumentFile tree = DocumentFile.fromTreeUri(this, uri);
-			ParcelFileDescriptor filePfd = getContentResolver().openFileDescriptor(tree.getUri(), "r");
-			if (filePfd == null) {
-				Log.e(TAG, "Failed to get file descriptor for " + uriString);
-				return -1;
-			}
-			return filePfd.detachFd();  // Take ownership of the fd.
-		} catch (Exception e) {
-			Log.e(TAG, "Exception opening content uri: " + e.toString());
-			return -1;
-		}
-	}
-
 	public String[] listContentUriDir(String uriString) {
 		try {
 			Uri uri = Uri.parse(uriString);

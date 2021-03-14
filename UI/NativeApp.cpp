@@ -489,11 +489,13 @@ void NativeInit(int argc, const char *argv[], const char *savegame_dir, const ch
 		host = new NativeHost();
 	}
 #endif
+
+	g_Config.externalDirectory = external_dir;
+#if PPSSPP_PLATFORM(ANDROID)
 	if (System_GetPropertyBool(SYSPROP_ANDROID_SCOPED_STORAGE)) {
 		g_Config.externalDirectory = g_extFilesDir;
-	} else {
-		g_Config.externalDirectory = external_dir;
 	}
+#endif
 
 	g_Config.internalDataDirectory = savegame_dir;
 

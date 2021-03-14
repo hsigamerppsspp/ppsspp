@@ -286,22 +286,6 @@ bool PathBrowser::GetListing(std::vector<FileInfo> &fileInfo, const char *filter
 			info.isWritable = false;  // We don't yet request write access
 			fileInfo.push_back(info);
 		}
-		/*
-		int fd = Android_OpenContentUriFd(path_);
-		if (fd >= 0) {
-			std::string path = path_;
-			if (path.back() == '/') {
-				path.pop_back();
-			}
-			ERROR_LOG(FILESYS, "PathBrowser: Opened directory '%s' as fd %d", path.c_str(), fd);
-			getFilesInDirByFd(fd, path, &fileInfo, filter, GETFILES_URIENCODE_ANDROID);
-			for (auto &info : fileInfo) {
-				ERROR_LOG(FILESYS, "%s - %s", info.fullName.c_str(), info.name.c_str());
-			}
-		} else {
-			ERROR_LOG(FILESYS, "PathBrowser: Failed to open directory '%s' as fd", path_.c_str());
-		}
-		*/
 		return true;
 	}
 #endif

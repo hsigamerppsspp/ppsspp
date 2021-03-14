@@ -171,7 +171,6 @@ static float g_safeInsetBottom = 0.0;
 static jmethodID postCommand;
 
 static jmethodID openContentUri;
-static jmethodID openContentUriDir;
 static jmethodID listContentUriDir;
 static jmethodID closeContentUri;
 
@@ -251,22 +250,6 @@ int Android_OpenContentUriFd(const std::string &filename) {
 	auto env = getEnv();
 	jstring param = env->NewStringUTF(fname.c_str());
 	int fd = env->CallIntMethod(nativeActivity, openContentUri, param);
-	return fd;
-}
-
-// Probably useless.
-int Android_OpenContentUriDirFd(const std::string &filename) {
-	if (!nativeActivity) {
-		return -1;
-	}
-
-	std::string fname = filename;
-	// PPSSPP adds an ending slash to directories before looking them up.
-	if (fname.back() == '/')
-		fname.pop_back();
-	auto env = getEnv();
-	jstring param = env->NewStringUTF(fname.c_str());
-	int fd = env->CallIntMethod(nativeActivity, openContentUriDir, param);
 	return fd;
 }
 
@@ -568,8 +551,6 @@ extern "C" void Java_org_ppsspp_ppsspp_NativeActivity_registerCallbacks(JNIEnv *
 	_dbg_assert_(postCommand);
 	openContentUri = env->GetMethodID(env->GetObjectClass(obj), "openContentUri", "(Ljava/lang/String;)I");
 	_dbg_assert_(openContentUri);
-	openContentUriDir = env->GetMethodID(env->GetObjectClass(obj), "openContentUriDir", "(Ljava/lang/String;)I");
-	_dbg_assert_(openContentUriDir);
 	listContentUriDir = env->GetMethodID(env->GetObjectClass(obj), "listContentUriDir", "(Ljava/lang/String;)[Ljava/lang/String;");
 	_dbg_assert_(listContentUriDir);
 }
