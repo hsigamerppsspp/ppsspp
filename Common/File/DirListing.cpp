@@ -105,6 +105,8 @@ bool FileInfo::operator <(const FileInfo & other) const {
 		return false;
 }
 
+#if !PPSSPP_PLATFORM(WINDOWS)
+
 size_t getFilesInDirByFd(int directoryFd, const std::string &rootDir, std::vector<FileInfo> * files, const char *filter, int flags) {
 	size_t foundEntries = 0;
 	std::set<std::string> filters;
@@ -179,6 +181,8 @@ size_t getFilesInDirByFd(int directoryFd, const std::string &rootDir, std::vecto
 		std::sort(files->begin(), files->end());
 	return foundEntries;
 }
+
+#endif
 
 size_t getFilesInDir(const char *directory, std::vector<FileInfo> * files, const char *filter, int flags) {
 	size_t foundEntries = 0;

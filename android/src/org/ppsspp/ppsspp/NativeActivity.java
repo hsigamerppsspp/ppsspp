@@ -1305,8 +1305,11 @@ public abstract class NativeActivity extends Activity {
 				intent.addCategory(Intent.CATEGORY_OPENABLE);
 				intent.setType("*/*");
 				intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
-				//intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri);
+				// Possible alternative approach:
+				// String[] mimeTypes = {"application/octet-stream", "/x-iso9660-image"};
+				// intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
 				startActivityForResult(intent, RESULT_OPEN_DOCUMENT);
+				// intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri);
 			} catch (Exception e) {
 				Log.e(TAG, e.toString());
 				return false;
@@ -1316,7 +1319,7 @@ public abstract class NativeActivity extends Activity {
 				Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
 				intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 				intent.addFlags(Intent.FLAG_GRANT_PREFIX_URI_PERMISSION);
-				intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);  // not yet used properly
+				intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
 				intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);  // Only allow local folders.
 				startActivityForResult(intent, RESULT_OPEN_DOCUMENT_TREE);
 				return true;
