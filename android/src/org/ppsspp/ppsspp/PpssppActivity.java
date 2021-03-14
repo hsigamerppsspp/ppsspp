@@ -131,6 +131,23 @@ public class PpssppActivity extends NativeActivity {
 		}
 	}
 
+	public String getContentUriParent(String uriString) {
+		try {
+			Uri uri = Uri.parse(uriString);
+			DocumentFile documentFile = DocumentFile.fromSingleUri(this, uri);
+			DocumentFile parent = documentFile.getParentFile();
+			if (parent != null) {
+				return parent.getUri().toString();
+			} else {
+				Log.i(TAG, "No parent found for " + uriString);
+				return "";
+			}
+		} catch (Exception e) {
+			Log.e(TAG, "Exception getting parent of content uri: " + e.toString());
+			return "";
+		}
+	}
+
 	public String[] listContentUriDir(String uriString) {
 		try {
 			Uri uri = Uri.parse(uriString);

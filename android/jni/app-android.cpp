@@ -173,6 +173,7 @@ static jmethodID postCommand;
 static jmethodID openContentUri;
 static jmethodID listContentUriDir;
 static jmethodID closeContentUri;
+static jmethodID getContentUriParent;
 
 static jobject nativeActivity;
 static volatile bool exitRenderLoop;
@@ -275,6 +276,31 @@ std::vector<std::string> Android_ListContentUri(const std::string &path) {
     }
 	env->DeleteLocalRef(fileList);
 	return items;
+}
+
+std::string Android_GetContentUriParent(const std::string &path) {
+	if (!nativeActivity) {
+		return std::string();
+	}
+
+	std::string fname = path;
+	// PPSSPP adds an ending slash to directories before looking them up.
+	// TODO: Fix that in the caller
+	if (fname.back() == '/') {
+		fname.pop_back();
+	}
+
+	std::string parent;
+	auto env = getEnv();
+	jstring param = env->NewStringUTF(fname.c_str());
+	jstring str = (jstring)env->CallObjectMethod(nativeActivity, getContentUriParent, param);
+	const char *charArray = env->GetStringUTFChars(str, 0);
+	if (charArray) {
+		parent = charArray;
+	}
+	env->ReleaseStringUTFChars(str, charArray);
+	env->DeleteLocalRef(str);
+	return parent;
 }
 
 class ContentURIFileLoader : public ProxiedFileLoader {
@@ -551,6 +577,8 @@ extern "C" void Java_org_ppsspp_ppsspp_NativeActivity_registerCallbacks(JNIEnv *
 	_dbg_assert_(postCommand);
 	openContentUri = env->GetMethodID(env->GetObjectClass(obj), "openContentUri", "(Ljava/lang/String;)I");
 	_dbg_assert_(openContentUri);
+	getContentUriParent = env->GetMethodID(env->GetObjectClass(obj), "getContentUriParent", "(Ljava/lang/String;)Ljava/lang/String;");
+	_dbg_assert_(getContentUriParent);
 	listContentUriDir = env->GetMethodID(env->GetObjectClass(obj), "listContentUriDir", "(Ljava/lang/String;)[Ljava/lang/String;");
 	_dbg_assert_(listContentUriDir);
 }

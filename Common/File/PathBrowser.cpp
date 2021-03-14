@@ -283,8 +283,8 @@ bool PathBrowser::GetListing(std::vector<FileInfo> &fileInfo, const char *filter
 			}
 			FileInfo info;
 			info.name = parts[2];
-
-			if (allowedExtensions.size()) {
+			info.isDirectory = parts[0][0] == 'D';
+			if (!info.isDirectory && allowedExtensions.size()) {
 				bool found = false;
 				for (auto &ext : allowedExtensions) {
 					if (endsWithNoCase(info.name, "." + ext)) {
@@ -296,9 +296,7 @@ bool PathBrowser::GetListing(std::vector<FileInfo> &fileInfo, const char *filter
 					continue;
 				}
 			}
-
 			info.exists = true;
-			info.isDirectory = parts[0][0] == 'D';
 			sscanf(parts[1].c_str(), "%ld", &info.size);
 			info.fullName = parts[3];
 			info.isWritable = false;  // We don't yet request write access
@@ -331,7 +329,7 @@ bool PathBrowser::CanNavigateUp() {
 		// Need to figure out how much we can navigate by parsing the URL.
 		// DocumentUri from seems to be split into two paths: The folder you have gotten permission to see,
 		// and the folder below it.
-		return false;
+		return !Android_GetContentUriParent(path_).empty();
 	}
 #endif
 
@@ -342,6 +340,20 @@ bool PathBrowser::CanNavigateUp() {
 }
 
 void PathBrowser::NavigateUp() {
+#if PPSSPP_PLATFORM(ANDROID)
+	if (Android_IsContentUri(path_)) {
+		// Need to figure out how much we can navigate by parsing the URL.
+		// DocumentUri from seems to be split into two paths: The folder you have gotten permission to see,
+		// and the folder below it.
+		std::string parent = Android_GetContentUriParent(path_) + "/";
+		if (!parent.empty()) {
+			path_ = parent;
+		} else {
+			ERROR_LOG(FILESYS, "Failed to navigate up from '%s'", path_.c_str());
+		}
+		return;
+	}
+#endif
 	// Upwards.
 	// Check for windows drives.
 	if (path_.size() == 3 && path_[1] == ':') {
