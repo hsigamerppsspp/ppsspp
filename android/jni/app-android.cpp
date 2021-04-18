@@ -173,7 +173,6 @@ static jmethodID postCommand;
 static jmethodID openContentUri;
 static jmethodID listContentUriDir;
 static jmethodID closeContentUri;
-static jmethodID getContentUriParent;
 
 static jobject nativeActivity;
 static volatile bool exitRenderLoop;
@@ -254,53 +253,49 @@ int Android_OpenContentUriFd(const std::string &filename) {
 	return fd;
 }
 
-std::vector<std::string> Android_ListContentUri(const std::string &path) {
+// Empty string means no parent
+std::string Android_GetContentUriParent(const std::string &uri) {
+    // Might attempt to implement this with path manipulation later, but that's
+    // not reliable.
+    return "";
+}
+
+std::vector<FileInfo> Android_ListContentUri(const std::string &path) {
 	if (!nativeActivity) {
-		return std::vector<std::string>();
+		return std::vector<FileInfo>();
 	}
 	auto env = getEnv();
 	jstring param = env->NewStringUTF(path.c_str());
 	jobject retval = env->CallObjectMethod(nativeActivity, listContentUriDir, param);
 
 	jobjectArray fileList = (jobjectArray)retval;
-	std::vector<std::string> items;
+	std::vector<FileInfo> items;
 	int size = env->GetArrayLength(fileList);
 	for (int i = 0; i < size; i++) {
         jstring str = (jstring) env->GetObjectArrayElement(fileList, i);
         const char *charArray = env->GetStringUTFChars(str, 0);
         if (charArray) {  // paranoia
-            items.push_back(std::string(charArray));
+            std::string file = charArray;
+			INFO_LOG(FILESYS, "!! %s", file.c_str());
+			std::vector<std::string> parts;
+			SplitString(file, '|', parts);
+			if (parts.size() != 4) {
+				continue;
+			}
+			FileInfo info;
+			info.name = parts[2];
+			info.isDirectory = parts[0][0] == 'D';
+			info.exists = true;
+			sscanf(parts[1].c_str(), "%ld", &info.size);
+			info.fullName = parts[3];
+			info.isWritable = false;  // We don't yet request write access
+			items.push_back(info);
         }
         env->ReleaseStringUTFChars(str, charArray);
         env->DeleteLocalRef(str);
     }
 	env->DeleteLocalRef(fileList);
 	return items;
-}
-
-std::string Android_GetContentUriParent(const std::string &path) {
-	if (!nativeActivity) {
-		return std::string();
-	}
-
-	std::string fname = path;
-	// PPSSPP adds an ending slash to directories before looking them up.
-	// TODO: Fix that in the caller
-	if (fname.back() == '/') {
-		fname.pop_back();
-	}
-
-	std::string parent;
-	auto env = getEnv();
-	jstring param = env->NewStringUTF(fname.c_str());
-	jstring str = (jstring)env->CallObjectMethod(nativeActivity, getContentUriParent, param);
-	const char *charArray = env->GetStringUTFChars(str, 0);
-	if (charArray) {
-		parent = charArray;
-	}
-	env->ReleaseStringUTFChars(str, charArray);
-	env->DeleteLocalRef(str);
-	return parent;
 }
 
 class ContentURIFileLoader : public ProxiedFileLoader {
@@ -577,8 +572,6 @@ extern "C" void Java_org_ppsspp_ppsspp_NativeActivity_registerCallbacks(JNIEnv *
 	_dbg_assert_(postCommand);
 	openContentUri = env->GetMethodID(env->GetObjectClass(obj), "openContentUri", "(Ljava/lang/String;)I");
 	_dbg_assert_(openContentUri);
-	getContentUriParent = env->GetMethodID(env->GetObjectClass(obj), "getContentUriParent", "(Ljava/lang/String;)Ljava/lang/String;");
-	_dbg_assert_(getContentUriParent);
 	listContentUriDir = env->GetMethodID(env->GetObjectClass(obj), "listContentUriDir", "(Ljava/lang/String;)[Ljava/lang/String;");
 	_dbg_assert_(listContentUriDir);
 }

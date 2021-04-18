@@ -268,22 +268,14 @@ bool PathBrowser::GetListing(std::vector<FileInfo> &fileInfo, const char *filter
 
 #if PPSSPP_PLATFORM(ANDROID)
 	if (Android_IsContentUri(path_)) {
-		std::vector<std::string> files = Android_ListContentUri(path_);
+		std::vector<FileInfo> files = Android_ListContentUri(path_);
+
 		fileInfo.clear();
 
 		std::vector<std::string> allowedExtensions;
 		SplitString(filter, ':', allowedExtensions);
 
-		for (auto &file : files) {
-			ERROR_LOG(FILESYS, "!! %s", file.c_str());
-			std::vector<std::string> parts;
-			SplitString(file, '|', parts);
-			if (parts.size() != 4) {
-				continue;
-			}
-			FileInfo info;
-			info.name = parts[2];
-			info.isDirectory = parts[0][0] == 'D';
+		for (auto &info : files) {
 			if (!info.isDirectory && allowedExtensions.size()) {
 				bool found = false;
 				for (auto &ext : allowedExtensions) {
@@ -296,10 +288,6 @@ bool PathBrowser::GetListing(std::vector<FileInfo> &fileInfo, const char *filter
 					continue;
 				}
 			}
-			info.exists = true;
-			sscanf(parts[1].c_str(), "%ld", &info.size);
-			info.fullName = parts[3];
-			info.isWritable = false;  // We don't yet request write access
 			fileInfo.push_back(info);
 		}
 		return true;
