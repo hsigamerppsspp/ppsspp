@@ -17,6 +17,10 @@ struct FileInfo {
 	bool isWritable = false;
 	uint64_t size = 0;
 
+	// Currently only supported for Android storage files.
+	// Other places use different methods to get this.
+	uint64_t lastModified = 0;
+
 	bool operator <(const FileInfo &other) const;
 };
 

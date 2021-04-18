@@ -983,6 +983,9 @@
     <ClCompile Include="Debugger\WebSocket\MemoryInfoSubscriber.cpp">
       <Filter>Debugger\WebSocket</Filter>
     </ClCompile>
+    <ClCompile Include="FileSystems\AndroidStorageFileSystem.cpp">
+      <Filter>FileSystems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ELF\ElfReader.h">
@@ -1681,6 +1684,9 @@
     </ClInclude>
     <ClInclude Include="Debugger\WebSocket\MemoryInfoSubscriber.h">
       <Filter>Debugger\WebSocket</Filter>
+    </ClInclude>
+    <ClInclude Include="FileSystems\AndroidStorageFileSystem.h">
+      <Filter>FileSystems</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
