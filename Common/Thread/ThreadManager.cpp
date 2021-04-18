@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdio>
+#include <algorithm>
 #include <thread>
 #include <deque>
 #include <condition_variable>
@@ -122,7 +123,10 @@ void ThreadManager::EnqueueTaskOnThread(int threadNum, Task *task, TaskType task
 }
 
 int ThreadManager::GetNumLooperThreads() const {
-	return (int)(global_->threads_.size() / 2);
+	// If possible, let's use all threads but one for parallel loops.
+	// Not sure what's the best policy here. Maybe we should just have more threads than CPUs.
+	int numLooperThreads = (int)(global_->threads_.size()) - 1;
+	return std::max(numLooperThreads, 1);
 }
 
 void ThreadManager::TryCancelTask(uint64_t taskID) {
