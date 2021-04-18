@@ -579,6 +579,7 @@ static bool TestMemMap() {
 
 static bool TestAndroidContentURI() {
 	static const char *treeURIString = "content://com.android.externalstorage.documents/tree/primary%3APSP%20ISO";
+	static const char *directoryURIString = "content://com.android.externalstorage.documents/tree/primary%3APSP%20ISO/document/primary%3APSP%20ISO";
 	static const char *fileURIString = "content://com.android.externalstorage.documents/tree/primary%3APSP%20ISO/document/primary%3APSP%20ISO%2FTekken%206.iso";
 
 	AndroidStorageContentURI treeURI;
@@ -593,6 +594,8 @@ static bool TestAndroidContentURI() {
 	EXPECT_FALSE(fileURI.CanNavigateUp());
 	
 	EXPECT_EQ_STR(fileURI.FilePath(), fileURI.RootPath());
+
+	EXPECT_EQ_STR(fileURI.ToString(), std::string(directoryURIString));
 	return true;
 }
 

@@ -17,6 +17,7 @@
 
 #if PPSSPP_PLATFORM(ANDROID)
 #include "android/jni/app-android.h"
+#include "android/jni/AndroidContentURI.h"
 #endif
 
 
@@ -314,10 +315,8 @@ bool PathBrowser::CanNavigateUp() {
 */
 #if PPSSPP_PLATFORM(ANDROID)
 	if (Android_IsContentUri(path_)) {
-		// Need to figure out how much we can navigate by parsing the URL.
-		// DocumentUri from seems to be split into two paths: The folder you have gotten permission to see,
-		// and the folder below it.
-		return !Android_GetContentUriParent(path_).empty();
+		AndroidStorageContentURI uri(path_);
+		return uri.CanNavigateUp();
 	}
 #endif
 
@@ -330,19 +329,14 @@ bool PathBrowser::CanNavigateUp() {
 void PathBrowser::NavigateUp() {
 #if PPSSPP_PLATFORM(ANDROID)
 	if (Android_IsContentUri(path_)) {
-		// Need to figure out how much we can navigate by parsing the URL.
-		// DocumentUri from seems to be split into two paths: The folder you have gotten permission to see,
-		// and the folder below it.
-		std::string parent = Android_GetContentUriParent(path_) + "/";
-		if (!parent.empty()) {
-			path_ = parent;
-		} else {
-			ERROR_LOG(FILESYS, "Failed to navigate up from '%s'", path_.c_str());
+		// Manipulate the Uri to navigate upwards.
+		AndroidStorageContentURI uri(path_);
+		if (uri.NavigateUp()) {
+			path_ = uri.ToString();
 		}
 		return;
 	}
 #endif
-	// Upwards.
 	// Check for windows drives.
 	if (path_.size() == 3 && path_[1] == ':') {
 		path_ = "/";

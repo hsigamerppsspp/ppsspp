@@ -90,10 +90,10 @@ public:
 	std::string ToString() const {
 		if (file.empty()) {
 			// Tree URI
-			return StringFromFormat("content://%s/%s", provider, UriEncode(root).c_str());
+			return StringFromFormat("content://%s/tree/%s", provider.c_str(), UriEncode(root).c_str());
 		} else {
 			// File URI
-			return StringFromFormat("content://%s/%s/document/%s", provider, UriEncode(root).c_str(), UriEncode(file).c_str());
+			return StringFromFormat("content://%s/tree/%s/document/%s", provider.c_str(), UriEncode(root).c_str(), UriEncode(file).c_str());
 		}
 	}
 
